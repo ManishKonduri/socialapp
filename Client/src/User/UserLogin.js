@@ -71,7 +71,8 @@ function UserLogin(props) {
             pwd: pwd
         }
 
-        let data = await userLogin(loginDetails);
+        let data = await userLogin(loginDetails)
+       
         if(data.status == 201) {
           cookies.set('userId', data.data.userId, { path: '/' });
           cookies.set('name', data.data.name, { path: '/' });
