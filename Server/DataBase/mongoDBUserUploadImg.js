@@ -7,7 +7,7 @@ const schema = new mongo.Schema({
     likes: [{
         type: String
     }],
-    image: { data: Buffer, contentType: String}
+    image: String
 }, {
     timestamps: true
 });

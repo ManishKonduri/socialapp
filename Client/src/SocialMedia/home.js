@@ -19,6 +19,7 @@ import TemporaryDrawer from "../Components/Drawer";
 import LoggedInUser from '../Components/LoggedInUser';
 import Cookies from 'universal-cookie';
 import { w3cwebsocket as W3CWebSocket } from "websocket";
+import Resizer from 'react-image-file-resizer';
 
 const client = new W3CWebSocket('ws://127.0.0.1:8000');
 client.binaryType = 'arraybuffer';
@@ -67,17 +68,34 @@ function Home(props) {
         },
     }));
 
+    const resizeFile = (file) => new Promise(resolve => {
+        Resizer.imageFileResizer(file, 500, 500, 'JPEG', 65, 0,
+        uri => {
+          resolve(uri);
+        },
+        'base64'
+        );
+    });
 
 
-    const uploadHandler = (event) => {
-        const data = new FormData();
-        data.append('userId', userId)
-        data.append('name', name)
-        data.append('file', event.target.files[0]);
-        axios.post("http://localhost:4000/home", data).then(res => setNewImg(res.data));
-
-
-
+    const uploadHandler = async (event) => {
+        try {
+            const file = event.target.files[0];
+            console.log(file)
+            const image = await resizeFile(file);
+            console.log(image)
+            let data = {
+                'userId' : userId,
+                'name' : name,
+                'image' : image
+            }
+    
+            axios.post("http://localhost:4000/home", data).then(res => setNewImg(res.data));
+            console.log(image);
+        } catch(err) {
+            console.log(err);
+        }
+     
         client.send(JSON.stringify({
             type: "contentchange",
             username: {
@@ -195,7 +213,8 @@ function Home(props) {
                                 />
                                 <CardMedia
                                     className={classes.media}
-                                    image={base64Flag + arrayBufferToBase64(image.image.data.data)}
+                                    // image={base64Flag + arrayBufferToBase64(image.image.data.data)}
+                                    image={image.image}
                                     title="Paella dish"
                                 />
                                 <CardContent>
@@ -388,7 +407,8 @@ function Home(props) {
 
                             <CardMedia
                                 className={classes.media}
-                                image={base64Flag + arrayBufferToBase64(newImg.image.image.data.data)}
+                                // image={base64Flag + arrayBufferToBase64(newImg.image.image.data.data)}
+                                image={newImg.image.image}
                                 title="Paella dish"
                             />
                             <CardContent>
