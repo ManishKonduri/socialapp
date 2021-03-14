@@ -31,7 +31,6 @@ const useStyles = makeStyles(() => ({
 function Profile(props) {
   const classes = useStyles();
   const cookies = new Cookies();
-  const base64Flag = 'data:image/jpeg;base64,';
   let userId = cookies.get('userId');
   console.log(userId)
   let userName = cookies.get('name');
@@ -45,7 +44,7 @@ function Profile(props) {
         let imagesData = data.data.Images;
         let loggedList = [];
         for (let i = 0; i < imagesData.length; i++) {          
-            if(data.data.Images[i].userId == userId) {
+            if(imagesData[i].userId == userId) {
                 loggedList.push(data.data.Images[i]);
             }   
         }
@@ -55,101 +54,14 @@ function Profile(props) {
     getAllImagesOnLoad()
 }, []);
 
-
-//   const [open, setOpen] = React.useState(false);
-//   const [selectedValue, setSelectedValue] = React.useState(emails[1]);
-// //-------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-//   function SimpleDialog(props) {
-//     const classes = useStyles();
-//     const { onClose, selectedValue, open1 } = props;
-  
-//     const handleClose = () => {
-//       onClose(selectedValue);
-//     };
-  
-//     const handleListItemClick = (value) => {
-//       onClose(value);
-//     };
-  
-//     return (
-//       <Dialog onClose={handleClose} aria-labelledby="simple-dialog-title" open={open1}>
-//         <DialogTitle id="simple-dialog-title">Set backup account</DialogTitle>
-//         <List>
-//           {emails.map((email) => (
-//             <ListItem button onClick={() => handleListItemClick(email)} key={email}>
-//               <ListItemAvatar>
-//                 <Avatar className={classes.avatar}>
-//                   <PersonIcon />
-//                 </Avatar>
-//               </ListItemAvatar>
-//               <ListItemText primary={email} />
-//             </ListItem>
-//           ))}
-  
-//           <ListItem autoFocus button onClick={() => handleListItemClick('addAccount')}>
-//             <ListItemAvatar>
-//               <Avatar>
-//                 <AddIcon />
-//               </Avatar>
-//             </ListItemAvatar>
-//             <ListItemText primary="Add account" />
-//           </ListItem>
-//         </List>
-//       </Dialog>
-//     );
-//   }
-  
-//   SimpleDialog.propTypes = {
-//     onClose: PropTypes.func.isRequired,
-//     open1: PropTypes.bool.isRequired,
-//     selectedValue: PropTypes.string.isRequired,
-//   };
-  
-//    function SimpleDialogDemo() {
-//       console.log("called")
-   
-  
-//     const handleClickOpen = () => {
-//       setOpen(true);
-//     };
-  
-//     const handleClose = (value) => {
-//       setOpen(false);
-//       setSelectedValue(value);
-//     };
-  
-//     return (
-//       <div>
-//         <Typography variant="subtitle1">Selected: {selectedValue}</Typography>
-//         <br />
-//         <Button variant="outlined" color="primary" onClick={handleClickOpen}>
-//           Open simple dialog
-//         </Button>
-//         <SimpleDialog selectedValue={selectedValue} open1={open} onClose={handleClose} />
-//       </div>
-//     );
-//   }
-
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-  const arrayBufferToBase64 = (buffer) => {
-    var binary = '';
-    var bytes = [].slice.call(new Uint8Array(buffer));
-    bytes.forEach((b) => binary += String.fromCharCode(b));
-    return window.btoa(binary);
-  };
   const HomeRender = () => {
     let data = loggedUser;
       return (
         data.length >0 ? (<div className={classes.root}>
             <GridList cellHeight={400} className={classes.gridList} cols={3}>
               {data.map((tile) => (
-                <GridListTile key={base64Flag + arrayBufferToBase64(tile.image.data.data)} cols={1}  >
-                  <img src={base64Flag + arrayBufferToBase64(tile.image.data.data)} alt="Image" onClick={() => {props.history.go(-1)}}/>
+                <GridListTile key={tile._id} cols={1}  >
+                  <img src={tile.image} alt="Image" onClick={() => {props.history.go(-1)}}/>
                 </GridListTile>
               ))}
             </GridList>
