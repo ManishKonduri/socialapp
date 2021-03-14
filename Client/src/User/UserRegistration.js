@@ -67,7 +67,7 @@ function UserRegistration(props) {
         if (data.status == 201) {
             console.log("Success");
             cookies.set('userId', data.data.userId, { path: '/' });
-            cookies.set('name', data.data.name, { path: '/' });
+            cookies.set('name', name, { path: '/' });
             cookies.set('email',email);
             props.history.push('/home');
         }

@@ -2,17 +2,21 @@ const express = require('express');
 const router = require('./routes/router');
 const body = require('body-parser');
 const cors = require('cors');
+const app = express();
+const server = require('http').Server(app);
 
-
-const webSocketsServerPort = 8000;
+const webSocketsServerPort = 5000;
 const webSocketServer = require('websocket').server;
 const http = require('http');
 
-const server = http.createServer();
-server.listen(webSocketsServerPort);
+// const server = http.createServer();
+// server.listen(webSocketsServerPort);
 const wsServer = new webSocketServer({
   httpServer: server
 });
+
+
+const port = process.env.PORT || 4000;
 
 const clients = {};
 // I'm maintaining all active users in this object
@@ -78,12 +82,10 @@ wsServer.on('request', function(request) {
   // });
 });
 
-const app = express();
-const port = 4000;
 app.use(cors());
 app.use(body.json());
 
 
 app.use('/',router);
 
-app.listen(4000);
+server.listen(4000);

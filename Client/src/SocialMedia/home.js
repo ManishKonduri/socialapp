@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { makeStyles } from '@material-ui/core/styles';
+import { fade, makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
@@ -20,9 +20,13 @@ import LoggedInUser from '../Components/LoggedInUser';
 import Cookies from 'universal-cookie';
 import { w3cwebsocket as W3CWebSocket } from "websocket";
 import Resizer from 'react-image-file-resizer';
+import Fab from "@material-ui/core/Fab";
+import AddPhotoAlternateIcon from "@material-ui/icons/AddPhotoAlternate";
+import PrimarySearchAppBar from './AppBar';
 
-const client = new W3CWebSocket('ws://127.0.0.1:8000');
-client.binaryType = 'arraybuffer';
+
+// const client = new W3CWebSocket('ws://192.168.0.115:8000/');
+// client.binaryType = 'arraybuffer';
 
 function Home(props) {
     const [photos, setPhotos] = React.useState([]);
@@ -96,13 +100,13 @@ function Home(props) {
             console.log(err);
         }
      
-        client.send(JSON.stringify({
-            type: "contentchange",
-            username: {
-                'userId': userId,
-                'name': name
-            }
-        }));
+    //     client.send(JSON.stringify({
+    //         type: "contentchange",
+    //         username: {
+    //             'userId': userId,
+    //             'name': name
+    //         }
+    //     }));
     }
 
     const likePost = async (userid, username, id, post) => {
@@ -299,24 +303,24 @@ function Home(props) {
         }
 
         async function getAllImagesOnLoad() {
-            client.onopen = () => {
-                console.log('WebSocket Client Connected');
-            };
-            client.onmessage = (message) => {
-                const dataFromServer = JSON.parse(message.data);
-                const stateToChange = {};
-                if (dataFromServer.type === "userevent") {
-                    stateToChange.currentUsers = Object.values(dataFromServer.data.users);
-                } else if (dataFromServer.type === "contentchange") {
-                    stateToChange.text = dataFromServer.data.editorContent || "---";
-                }
-                stateToChange.userActivity = dataFromServer.data.userActivity;
-                console.log(stateToChange.text.username.userId)
-                setTimeout(() => {
-                    her(stateToChange.text.username.userId)
-                }, 4000)
+            // client.onopen = () => {
+            //     console.log('WebSocket Client Connected');
+            // };
+            // client.onmessage = (message) => {
+            //     const dataFromServer = JSON.parse(message.data);
+            //     const stateToChange = {};
+            //     if (dataFromServer.type === "userevent") {
+            //         stateToChange.currentUsers = Object.values(dataFromServer.data.users);
+            //     } else if (dataFromServer.type === "contentchange") {
+            //         stateToChange.text = dataFromServer.data.editorContent || "---";
+            //     }
+            //     stateToChange.userActivity = dataFromServer.data.userActivity;
+            //     console.log(stateToChange.text.username.userId)
+            //     setTimeout(() => {
+            //         her(stateToChange.text.username.userId)
+            //     }, 4000)
 
-            };
+            // };
 
 
             let data = await allUserImages()
@@ -365,20 +369,16 @@ function Home(props) {
         setDupPhotos(dupliPhotos)
     };
 
+    const sendUploadHandler = (data) => {
+        uploadHandler(data)
+    }
+
     return (
         <div>
-
             <LoggedInUser.Provider value={{ loggedUser }}>
-                <TemporaryDrawer />
+                <PrimarySearchAppBar sendDataToParent={sendDataToParent} sendUploadHandler={sendUploadHandler} />
             </LoggedInUser.Provider>
-            <div>
-                <input type="file" name="file" onChange={e => uploadHandler(e)} />
-            </div>
-
-            <div style={{ marginLeft: '917px', marginBottom: '20px' }}>
-                <SearchBar sendDataToParent={sendDataToParent} />
-            </div>
-
+        
             <div style={{ marginTop: '80px' }}>
 
                 <Grid
