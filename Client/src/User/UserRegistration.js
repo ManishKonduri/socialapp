@@ -37,6 +37,7 @@ function UserRegistration(props) {
     const [pwd, setPwd] = useState("");
     const classes = useStyles();
     const cookies = new Cookies();
+    const [errName, setErrName] = useState(false);
 
     const changeName = (e) => {
         var nameVal = e.target.value;
@@ -63,6 +64,11 @@ function UserRegistration(props) {
             email: email,
             pwd: pwd
         }
+        if(name.length == 0 || email.length == 0 || pwd.length == 0)  
+        {   
+            setErrName(true)
+        }
+        else {
         let data = await userRegistration(userDetails);
         if (data.status == 201) {
             console.log("Success");
@@ -74,6 +80,7 @@ function UserRegistration(props) {
         else {
             console.log("Failure")
         }
+    }
     }
 
     return (
@@ -126,6 +133,7 @@ function UserRegistration(props) {
                         onChange={changePwd}
                         autoComplete="current-password"
                     />
+                    {errName == true ? <div>All Fields are Required</div> : <div></div>}
                     <Button
                         type="button"
                         fullWidth

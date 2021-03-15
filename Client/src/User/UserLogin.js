@@ -53,6 +53,8 @@ function UserLogin(props) {
     const [pwd, setPwd] = useState("");
     const classes = useStyles();
     const cookies = new Cookies();
+    const [errName, setErrName] = useState(false);
+    const [errLogin, setErrLogin] = useState(false);
     
     const changeEmail = (e) => {
         var emailVal = e.target.value;
@@ -70,9 +72,13 @@ function UserLogin(props) {
             email: email,
             pwd: pwd
         }
-
+        if(email.length == 0 || pwd.length == 0)  
+        {   
+            setErrName(true)
+        }
+        else {
+          try {
         let data = await userLogin(loginDetails)
-       
         if(data.status == 201) {
           cookies.set('userId', data.data.userId, { path: '/' });
           cookies.set('name', data.data.name, { path: '/' });
@@ -83,7 +89,12 @@ function UserLogin(props) {
         else {
             console.log("Failure")
         }
-
+          }
+          catch(err) {
+            setErrLogin(true)
+          }
+       
+      }
     } 
 
     return (
@@ -123,6 +134,7 @@ function UserLogin(props) {
             onChange={changePwd}
             autoComplete="current-password"
           />
+          { errLogin == false ? errName == true ? <div>All Fields are Required</div> : <div></div> : <div>Invalid Email or Password</div>}
           <Button
             type="button"
             fullWidth
