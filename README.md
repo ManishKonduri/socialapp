@@ -13,3 +13,19 @@
 ![Add Image](https://user-images.githubusercontent.com/34981544/111102437-17faa400-8572-11eb-8097-bd32d0f885f2.png?raw=true "Add Image")
 
 
+This project is built by using React JS, Express, Mongo DB.
+
+While deploying you can take a build of Client (npm run build) and paste the build folder from client to Server at root level. Then you need to make changes in package.json (change start). Now you can deploy it.
+
+Other way is to deploy client seperately and Server Seperately, Use Server Deployment URL in place of localhost (localhost:4000 in this project) at client API calls.
+
+My deployment URLs are: -
+
+Client :- https://social-media-front-end.herokuapp.com/
+Server :- https://social-media-backend-node.herokuapp.com/
+
+For database I used MongoDB Atlas and took the Connection URL and used it in my Server (mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false) -> Localhost url
+
+MongoDB URL :- mongodb+srv://*****:******@reactdb.6tf2j.mongodb.net/test?authSource=admin&replicaSet=atlas-lgt352-shard-0&w=majority&readPreference=primary&appname=MongoDB%20Compass&retryWrites=true&ssl=true
+
+
