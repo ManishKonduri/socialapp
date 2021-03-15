@@ -10,6 +10,6 @@
 
 ![Settings](https://user-images.githubusercontent.com/34981544/111102020-1aa8c980-8571-11eb-9bf8-82a7648e3d52.png?raw=true "Settings")
 
-
+![Add Image](https://user-images.githubusercontent.com/34981544/111102437-17faa400-8572-11eb-8097-bd32d0f885f2.png?raw=true "Add Image")
 
 
