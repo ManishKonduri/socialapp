@@ -99,10 +99,9 @@ function Settings(props) {
         console.log(data)
 
     }
-
     return (
         <div>
-            { userId !== undefined ?
+            { userId == undefined || userId.length>0 ?
                 <div>
                     <LoggedInUser.Provider value={{ loggedUser }}>
                         <PrimarySearchAppBar sendDataToParent={sendDataToParent} sendUploadHandler={sendUploadHandler} />

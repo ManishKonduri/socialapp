@@ -15,6 +15,7 @@ import LoggedInUser from '../Components/LoggedInUser';
 import Fab from "@material-ui/core/Fab";
 import AddPhotoAlternateIcon from "@material-ui/icons/AddPhotoAlternate";
 import HomeIcon from '@material-ui/icons/Home';
+import Cookies from 'universal-cookie';
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -86,6 +87,8 @@ export default function PrimarySearchAppBar({ sendDataToParent, sendUploadHandle
   let { loggedUser } = React.useContext(LoggedInUser);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+  const cookies = new Cookies();
+  let userId = cookies.get('userId');
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -107,6 +110,15 @@ export default function PrimarySearchAppBar({ sendDataToParent, sendUploadHandle
       navigatePage("/profile")
     else if (page == "settings")
       navigatePage("/settings")
+    else if(page == "logout") {
+        cookies.set('userId', "", { path: '/' });
+          cookies.set('name', "", { path: '/' });
+          cookies.set('email', "" , { path: '/' });
+        history.push("/login")
+      }
+    else if(page == "login") {
+      history.push('/login')
+    }
     setAnchorEl(null);
     handleMobileMenuClose();
   };
@@ -135,6 +147,7 @@ export default function PrimarySearchAppBar({ sendDataToParent, sendUploadHandle
     >
       <MenuItem onClick={() => handleMenuClose("profile")}>Profile</MenuItem>
       <MenuItem onClick={() => handleMenuClose("settings")}>My account</MenuItem>
+      { userId.length>0 ? <MenuItem onClick={() => handleMenuClose("logout")}>Log Out</MenuItem> : <MenuItem onClick={() => handleMenuClose("login")}>Log In</MenuItem>}
     </Menu>
   );
   // history.location.pathname == "/settings"
@@ -195,6 +208,7 @@ export default function PrimarySearchAppBar({ sendDataToParent, sendUploadHandle
   );
 
   return (
+    
     <div className={classes.grow}>
       <AppBar position="static">
         <Toolbar>
@@ -202,6 +216,7 @@ export default function PrimarySearchAppBar({ sendDataToParent, sendUploadHandle
           <Typography className={classes.title} variant="h6" noWrap>
             Insta-Gram
           </Typography>
+          
           <div className={classes.search}>
             <div className={classes.searchIcon}>
               <SearchIcon />
@@ -218,8 +233,12 @@ export default function PrimarySearchAppBar({ sendDataToParent, sendUploadHandle
 
             />
           </div>
+          
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
+            <div>
+              {userId.length > 0 ? 
+            <div>
             <input
               accept="image/*"
               id="contained-button-file"
@@ -234,6 +253,9 @@ export default function PrimarySearchAppBar({ sendDataToParent, sendUploadHandle
                 <AddPhotoAlternateIcon />
               </Fab>
             </label>
+            
+            </div> : <div></div>}
+            </div>
          
             <IconButton color="inherit" onClick={() => history.push("/home")}>
 
@@ -266,6 +288,6 @@ export default function PrimarySearchAppBar({ sendDataToParent, sendUploadHandle
       </AppBar>
       {renderMobileMenu}
       {renderMenu}
-    </div>
+    </div> 
   );
 }

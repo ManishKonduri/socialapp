@@ -125,7 +125,7 @@ function Profile(props) {
       <LoggedInUser.Provider value={{ loggedUser }}>
         <PrimarySearchAppBar sendDataToParent={sendDataToParent} sendUploadHandler={sendUploadHandler} />
       </LoggedInUser.Provider>
-      { userId !== undefined ?
+      {userId == undefined || userId.length>0 ?
         <div>
 
           <Card className={classes.root} variant="outlined">
