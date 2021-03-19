@@ -12,7 +12,7 @@ import Typography from '@material-ui/core/Typography';
 import { red } from '@material-ui/core/colors';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import { allUserImages, likesUpload, updatePage } from './../API/mongo';
+import { allUserImages, likesUpload, updatePage, userDetails } from './../API/mongo';
 import Grid from '@material-ui/core/Grid';
 import SearchBar from '../Components/SearchBar';
 import TemporaryDrawer from "../Components/Drawer";
@@ -34,6 +34,7 @@ function Home(props) {
     const [loggedUser, setLoggedUser] = React.useState([]);
     const [newPost, setNewPost] = React.useState([]);
     const [updateId, setUpdateId] = React.useState('');
+    const [account, setAccount] = React.useState('');
     const cookies = new Cookies();
     let userId = cookies.get('userId');
     let name = cookies.get('name');
@@ -74,10 +75,10 @@ function Home(props) {
 
     const resizeFile = (file) => new Promise(resolve => {
         Resizer.imageFileResizer(file, 500, 500, 'JPEG', 65, 0,
-        uri => {
-          resolve(uri);
-        },
-        'base64'
+            uri => {
+                resolve(uri);
+            },
+            'base64'
         );
     });
 
@@ -89,24 +90,25 @@ function Home(props) {
             const image = await resizeFile(file);
             console.log(image)
             let data = {
-                'userId' : userId,
-                'name' : name,
-                'image' : image
+                'userId': userId,
+                'name': name,
+                'image': image,
+                'account': account
             }
-    
+
             axios.post("http://localhost:4000/home", data).then(res => setNewImg(res.data));
             console.log(image);
-        } catch(err) {
+        } catch (err) {
             console.log(err);
         }
-     
-    //     client.send(JSON.stringify({
-    //         type: "contentchange",
-    //         username: {
-    //             'userId': userId,
-    //             'name': name
-    //         }
-    //     }));
+
+        //     client.send(JSON.stringify({
+        //         type: "contentchange",
+        //         username: {
+        //             'userId': userId,
+        //             'name': name
+        //         }
+        //     }));
     }
 
     const likePost = async (userid, username, id, post) => {
@@ -186,71 +188,152 @@ function Home(props) {
         console.log("clicked")
     }
 
+    
     const HomeRender = (data, flag) => {
+
         const classes = useStyles();
         if (data.length > 0) {
+            let searched = 0;
             const dataImages = data.map((image, index) => {
-                if (likes.length > 0) {
-                    var date = new Date(image.createdAt)
+                if (image != undefined) {
+                    if(flag == 3) {
+                    if (image.userId == userId || image.account == "public" ) {
+                        if (likes.length > 0) {
+                            var date = new Date(image.createdAt)
 
-                    return (
-                        <div>
-                            <Card className={classes.root}>
-                                <CardHeader
-                                    onClick={
-                                        () => {
-                                            searchAction(image.userName)
-                                        }
-                                    }
-                                    avatar={
-                                        <Avatar aria-label="recipe" className={classes.avatar}>
-                                            {image.userName[0]}
-                                        </Avatar>
-                                    }
-                                    action={
-                                        <IconButton aria-label="settings">
-                                            <MoreVertIcon />
-                                        </IconButton>
-                                    }
-                                    title={image.userName}
-                                    subheader={date.toDateString()}
-                                />
-                                <CardMedia
-                                    className={classes.media}
-                                    // image={base64Flag + arrayBufferToBase64(image.image.data.data)}
-                                    image={image.image}
-                                    title="Paella dish"
-                                />
-                                <CardContent>
+                            return (
+                                <div>
+                                    <Card className={classes.root}>
+                                        <CardHeader
+                                            onClick={
+                                                () => {
+                                                    searchAction(image.userName)
+                                                }
+                                            }
+                                            avatar={
+                                                <Avatar aria-label="recipe" className={classes.avatar}>
+                                                    {image.userName[0]}
+                                                </Avatar>
+                                            }
+                                            action={
+                                                <IconButton aria-label="settings">
+                                                    <MoreVertIcon />
+                                                </IconButton>
+                                            }
+                                            title={image.userName}
+                                            subheader={date.toDateString()}
+                                        />
+                                        <CardMedia
+                                            className={classes.media}
+                                            // image={base64Flag + arrayBufferToBase64(image.image.data.data)}
+                                            image={image.image}
+                                            title="Paella dish"
+                                        />
+                                        <CardContent>
 
-                                </CardContent>
-                                <CardActions disableSpacing>
-                                    <IconButton aria-label="add to favorites" onClick={() => {
-                                        likePost(userId, name, image._id, 1)
-                                        setId(image._id)
-                                    }}>
-                                        <FavoriteIcon />
-                                    </IconButton>
-                                    <div onClick={() => showLikes()}>
+                                        </CardContent>
+                                        <CardActions disableSpacing>
+                                            <IconButton aria-label="add to favorites" onClick={() => {
+                                                likePost(userId, name, image._id, 1)
+                                                setId(image._id)
+                                            }}>
+                                                <FavoriteIcon />
+                                            </IconButton>
+                                            <div onClick={() => showLikes()}>
 
-                                        <Typography variant="body2" color="textSecondary" component="p">
-                                                                   
-                                            {flag ==1 ? (id == image._id ? count + " " : likes[index].likes.length + " ") : (id == image._id ? count + " " : image.likes.length + " ")}
+                                                <Typography variant="body2" color="textSecondary" component="p">
+
+                                                    {flag == 1 ? (id == image._id ? count + " " : likes[index].likes.length + " ") : (id == image._id ? count + " " : image.likes.length + " ")}
 
                                     likes
                                     </Typography>
-                                    </div>
+                                            </div>
 
-                                </CardActions>
+                                        </CardActions>
 
 
-                            </Card><br />
-                        </div>
+                                    </Card><br />
+                                </div>
 
-                    );
+                            );
+                        }
+                    }
+                    else {
+                       searched = searched + 1;
+                       if(searched  == 1) {
+                        return (
+                            <div>Private Account</div>
+                        );
+                       }
+                       else {
+                           return <React.Fragment></React.Fragment>
+                       }
+                    }
                 }
+                else {
+                    if (likes.length > 0) {
+                        var date = new Date(image.createdAt)
 
+                        return (
+                            <div>
+                                <Card className={classes.root}>
+                                    <CardHeader
+                                        onClick={
+                                            () => {
+                                                searchAction(image.userName)
+                                            }
+                                        }
+                                        avatar={
+                                            <Avatar aria-label="recipe" className={classes.avatar}>
+                                                {image.userName[0]}
+                                            </Avatar>
+                                        }
+                                        action={
+                                            <IconButton aria-label="settings">
+                                                <MoreVertIcon />
+                                            </IconButton>
+                                        }
+                                        title={image.userName}
+                                        subheader={date.toDateString()}
+                                    />
+                                    <CardMedia
+                                        className={classes.media}
+                                        // image={base64Flag + arrayBufferToBase64(image.image.data.data)}
+                                        image={image.image}
+                                        title="Paella dish"
+                                    />
+                                    <CardContent>
+
+                                    </CardContent>
+                                    <CardActions disableSpacing>
+                                        <IconButton aria-label="add to favorites" onClick={() => {
+                                            likePost(userId, name, image._id, 1)
+                                            setId(image._id)
+                                        }}>
+                                            <FavoriteIcon />
+                                        </IconButton>
+                                        <div onClick={() => showLikes()}>
+
+                                            <Typography variant="body2" color="textSecondary" component="p">
+
+                                                {flag == 1 ? (id == image._id ? count + " " : likes[index].likes.length + " ") : (id == image._id ? count + " " : image.likes.length + " ")}
+
+                                likes
+                                </Typography>
+                                        </div>
+
+                                    </CardActions>
+
+
+                                </Card><br />
+                            </div>
+
+                        );
+                    }
+                }
+                }
             });
+
 
             return dataImages;
         }
@@ -321,7 +404,14 @@ function Home(props) {
             //     }, 4000)
 
             // };
-
+            
+            let Id = {
+                userId: userId
+            }
+            if(userId.length > 0 ) {
+            let data1 = await userDetails(Id);
+            setAccount(data1.data.userData[0].account);
+            }
 
             let data = await allUserImages()
             data = JSON.stringify(data)
@@ -350,15 +440,18 @@ function Home(props) {
 
     }, [])
 
-    const searchAction = (name) => {
-        // setSearchText(name);
+    const searchAction = (nameS) => {
+
         for (var i = 0; i < photos.length; i++) {
-            if (photos[i].userName == name) {
+            if (photos[i].userName == nameS) {
                 dupliPhotos.push(photos[i])
             }
         }
         setDupPhotos(dupliPhotos)
+
+
     }
+
     const sendDataToParent = (index) => {
         // setSearchText(index);
         for (var i = 0; i < photos.length; i++) {
@@ -378,7 +471,7 @@ function Home(props) {
             <LoggedInUser.Provider value={{ loggedUser }}>
                 <PrimarySearchAppBar sendDataToParent={sendDataToParent} sendUploadHandler={sendUploadHandler} />
             </LoggedInUser.Provider>
-        
+
             <div style={{ marginTop: '80px' }}>
 
                 <Grid
@@ -425,7 +518,7 @@ function Home(props) {
                                 <div onClick={() => showLikes()}>
                                     <Typography variant="body2" color="textSecondary" component="p">
                                         {
-                                           id ==newImg.image._id ? count + " " :  newImg.image.likes.length + " "
+                                            id == newImg.image._id ? count + " " : newImg.image.likes.length + " "
                                         }
                                     likes
                                     </Typography>
@@ -435,9 +528,10 @@ function Home(props) {
                         </Card><br />
                     </div>}
 
-                    {dupPhotos.length == 0 ? HomeRender(photos, 1) : HomeRender(dupPhotos, 1)}
+                    {dupPhotos.length == 0 ? HomeRender(photos, 1) : HomeRender(dupPhotos, 3)}
                 </Grid>
             </div>
+
         </div>
     )
 

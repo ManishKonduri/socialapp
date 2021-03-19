@@ -33,6 +33,14 @@ export const allUserImages = async () => {
     return await resp();
 }
 
+export const userDetails = async (userData) => {
+    const resp = async () => {
+        const data = await axios.post("http://localhost:4000/details", userData);
+        return data;
+    }
+    return await resp();
+}
+
 export const likesUpload = async (userData) => {
     const resp = async() => {
         const data = await axios.post("http://localhost:4000/likes", userData);

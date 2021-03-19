@@ -9,7 +9,8 @@ exports.userRegistration = async (req, res) => {
             userId : userId,
             name: req.body.name,
             password: req.body.pwd,
-            email: req.body.email
+            email: req.body.email,
+            account: "public"
         }
         const entry = await repo.create(userRegistrationData);
         res.status(201).json({"userId": userId})
@@ -19,6 +20,22 @@ exports.userRegistration = async (req, res) => {
     }
 }
 
+exports.userData = async (req, res) => {
+    try {
+        let userId = req.body.userId;
+        const user = await repo.find({ userId: userId},{password:0});
+        // console.log(user)
+        if(user.length > 0) {
+            res.status(201).json({"userData": user})
+        }
+        else {
+            res.status(400).json({"message": "Incorrect Email or Password"});
+        }
+    }
+    catch (err) {
+        res.status(402).json({"message": "Server Error, try after sometime"})
+    }
+}
 
 exports.userLogin = async (req, res) => {
     try {
@@ -62,11 +79,9 @@ exports.giveImgsOne = async (req, res) => {
 exports.imgLikes = async (req, res) => {
     try {
         let likeList = req.body.likes;
-        console.log(req.body.id)
         const likes = await repo1.updateOne({_id: req.body.id}, {
             likes: likeList
         });
-        console.log(likes)
         if(likes.ok == 1) {
             
             res.status(201).json({"Likes": likes});
@@ -86,12 +101,13 @@ exports.updateProfile = async (req, res) => {
        
         const updatedProfile = await repo.updateMany({userId: req.body.id}, {
             name: req.body.name,
-            email: req.body.email
+            email: req.body.email,
+            account: req.body.account
         });
         const updatePosts = await repo1.updateMany({userId: req.body.id}, {
-            userName: req.body.name
+            userName: req.body.name,
+            account: req.body.account
         });
-        console.log(updatedProfile)
         if(updatedProfile.ok == 1) { 
             res.status(201).json({"updatedProfile": updatedProfile});
         }
@@ -104,8 +120,6 @@ exports.updateProfile = async (req, res) => {
         console.log(err)
     }
 }
-
-
 
 
 

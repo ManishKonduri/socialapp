@@ -5,7 +5,8 @@ const schema = new mongo.Schema({
     userId: String,
     name: String,
     password: String,
-    email: String
+    email: String,
+    account: { type: String, default: 'public' }
 
 });
 

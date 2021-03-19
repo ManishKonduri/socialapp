@@ -12,11 +12,10 @@ router.post('/',myController.userRegistration);
 router.post('/login', myController.userLogin);
 router.post('/home', (req, res) => {
   var new_img = new Img;
-      console.log(req.body)
       new_img.userId = req.body.userId;
       new_img.userName = req.body.name;
       new_img.likes = []
-      console.log(req.body.image)
+      new_img.account = req.body.account;
       new_img.image = req.body.image
 
     new_img.save();
@@ -25,6 +24,7 @@ router.post('/home', (req, res) => {
   })
 
 router.get('/imgs', myController.giveImgs);
+router.post('/details', myController.userData);
 router.post('/likes', myController.imgLikes);
 router.put('/edit', myController.updateProfile);
 router.post('/update', myController.giveImgsOne);

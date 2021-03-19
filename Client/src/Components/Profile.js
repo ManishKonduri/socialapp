@@ -60,31 +60,31 @@ function Profile(props) {
 
   const resizeFile = (file) => new Promise(resolve => {
     Resizer.imageFileResizer(file, 500, 500, 'JPEG', 65, 0,
-    uri => {
-      resolve(uri);
-    },
-    'base64'
+      uri => {
+        resolve(uri);
+      },
+      'base64'
     );
-});
+  });
 
   const uploadHandler = async (event) => {
     try {
-        const file = event.target.files[0];
-        const image = await resizeFile(file);
-        let data = {
-            'userId' : userId,
-            'name' : userName,
-            'image' : image
-        }
+      const file = event.target.files[0];
+      const image = await resizeFile(file);
+      let data = {
+        'userId': userId,
+        'name': userName,
+        'image': image
+      }
 
-        axios.post("http://localhost:4000/home", data).then(res => setNewImg(res.data));
-        props.history.push("/home")
-        
-    } catch(err) {
-        console.log(err)
+      axios.post("http://localhost:4000/home", data).then(res => setNewImg(res.data));
+      props.history.push("/home")
+
+    } catch (err) {
+      console.log(err)
     }
 
-}
+  }
 
   const sendDataToParent = (name) => {
     setSearchText(name);
@@ -103,29 +103,35 @@ function Profile(props) {
 
   const HomeRender = () => {
     let data = loggedUser;
-    
-    return (
-      data.length > 0 ? (<div className={classes.root}>
-        <GridList cellHeight={400} className={classes.gridList} cols={3}>
-          {data.map((tile) => (
-            <GridListTile key={tile._id} cols={1}  >
-              <img src={tile.image} alt="Image" onClick={() => { props.history.go(-1) }} />
-            </GridListTile>
-          ))}
-        </GridList>
-      </div>) : <div>No Images yet</div>
-    );
+    if (data.length > 0) {
+      if (data[0].userId == userId || data[0].account == "public") {
+        return (
+          data.length > 0 ? (<div className={classes.root}>
+            <GridList cellHeight={400} className={classes.gridList} cols={3}>
+              {data.map((tile) => (
+                <GridListTile key={tile._id} cols={1}  >
+                  <img src={tile.image} alt="Image" onClick={() => { props.history.go(-1) }} />
+                </GridListTile>
+              ))}
+            </GridList>
+          </div>) : <div>No Images yet</div>
+        );
+      }
+      else {
+        return (
+          <div>Private Account</div>
+        )
+      }
 
-
+    }
   }
-
   return (
 
     <div>
       <LoggedInUser.Provider value={{ loggedUser }}>
         <PrimarySearchAppBar sendDataToParent={sendDataToParent} sendUploadHandler={sendUploadHandler} />
       </LoggedInUser.Provider>
-      {userId == undefined || userId.length>0 ?
+      {userId == undefined || userId.length > 0 ?
         <div>
 
           <Card className={classes.root} variant="outlined">
@@ -143,7 +149,7 @@ function Profile(props) {
                 {searchText.length > 0 ? searchText : userName}
               </Typography>
               <Typography className={classes.pos} color="textSecondary">
-                <b>{newImg.length > 0 ? loggedUser.length + 1 : loggedUser.length }</b> posts
+                <b>{newImg.length > 0 ? loggedUser.length + 1 : loggedUser.length}</b> posts
         </Typography>
             </CardContent>
 
