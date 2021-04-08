@@ -1,6 +1,7 @@
 import React from "react";
 
 const ThemeContext = React.createContext({
-    loggedUser: []
+    loggedUser: [],
+    account: {}
 });
 export default ThemeContext;

@@ -6,7 +6,10 @@ const schema = new mongo.Schema({
     name: String,
     password: String,
     email: String,
-    account: { type: String, default: 'public' }
+    account: { type: String, default: 'public' },
+    friendRequests : [{
+        type: String
+    }]
 
 });
 

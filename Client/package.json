@@ -19,7 +19,8 @@
     "react-scripts": "4.0.2",
     "universal-cookie": "^4.0.4",
     "web-vitals": "^1.1.0",
-    "websocket": "^1.0.33"
+    "websocket": "^1.0.33",
+    "react-toastify": "^6.0.0-rc.2"
   },
   "scripts": {
     "start": "react-scripts start",

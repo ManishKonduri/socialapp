@@ -16,6 +16,10 @@ import Fab from "@material-ui/core/Fab";
 import AddPhotoAlternateIcon from "@material-ui/icons/AddPhotoAlternate";
 import HomeIcon from '@material-ui/icons/Home';
 import Cookies from 'universal-cookie';
+import NotificationsIcon from '@material-ui/icons/Notifications';
+import Badge from '@material-ui/core/Badge';
+import Button from '@material-ui/core/Button';
+import ButtonGroup from '@material-ui/core/ButtonGroup';
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -84,14 +88,24 @@ const useStyles = makeStyles((theme) => ({
 export default function PrimarySearchAppBar({ sendDataToParent, sendUploadHandler }) {
   const classes = useStyles();
   const history = useHistory();
-  let { loggedUser } = React.useContext(LoggedInUser);
+  let { loggedUser, account } = React.useContext(LoggedInUser);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+  const [anchorElN, setAnchorElN] = React.useState(null);
   const cookies = new Cookies();
   let userId = cookies.get('userId');
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+  const handleClickN = (event) => {
+    setAnchorElN(event.currentTarget);
+  };
+
+  const handleCloseN = () => {
+    setAnchorElN(null);
+  };
+
 
   const navigatePage = (page) => {
     history.push({ pathname: page, state: { loggedUser: loggedUser } });
@@ -158,6 +172,33 @@ export default function PrimarySearchAppBar({ sendDataToParent, sendUploadHandle
     }
   }
 
+  // const noti = (
+  //   <MenuItem onClick={handleCloseN}>frndReq sent you a friend request</MenuItem>
+  // )
+
+  const requestResult = (frndReq, frndRes) => {
+    console.log(frndReq)
+    console.log(frndRes)
+  } 
+
+  const notifications = () => {
+    if(account.length == undefined) {
+      let frndReqsts = account.friendRequests.map(frndReq => {
+          return (
+            <div key={frndReq}>
+              <MenuItem onClick={handleCloseN}>{frndReq} sent you a friend request</MenuItem>
+              <ButtonGroup disableElevation variant="contained" color="primary">
+                <Button onClick={() => {requestResult(frndReq, "yes")}}>Yes</Button>
+                <Button onClick={() => {requestResult(frndReq, "no")}}>No</Button>
+              </ButtonGroup>
+            </div>
+          )
+      });
+      return frndReqsts;
+    }
+  }
+ 
+
   const mobileMenuId = 'primary-search-account-menu-mobile';
   const renderMobileMenu = (
     <Menu
@@ -177,6 +218,7 @@ export default function PrimarySearchAppBar({ sendDataToParent, sendUploadHandle
         </IconButton>
         <p>Home</p>
       </MenuItem>
+      { userId == undefined || userId.length > 0 ? 
       <MenuItem>
         <input
               accept="image/*"
@@ -192,7 +234,7 @@ export default function PrimarySearchAppBar({ sendDataToParent, sendUploadHandle
               </Fab>
             </label>
         <p>Upload Image</p>
-      </MenuItem>
+      </MenuItem> : <div></div> }
       <MenuItem onClick={handleProfileMenuOpen}>
         <IconButton
           aria-label="account of current user"
@@ -262,6 +304,23 @@ export default function PrimarySearchAppBar({ sendDataToParent, sendUploadHandle
               <HomeIcon />
 
             </IconButton>
+
+            <IconButton aria-label="show 17 new notifications" color="inherit">
+              <Badge badgeContent= { account != undefined ? account.friendRequests !=undefined ? account.friendRequests.length :0 : 0} color="secondary">
+                <NotificationsIcon onClick={handleClickN} />
+                
+                <Menu
+                    id="simple-menu"
+                    anchorEl={anchorElN}
+                    keepMounted
+                    open={Boolean(anchorElN)}
+                    onClose={handleCloseN}
+                  >
+                    { notifications()}
+                  </Menu>
+              </Badge>
+            </IconButton>
+            
             <IconButton
               edge="end"
               aria-label="account of current user"

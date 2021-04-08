@@ -65,3 +65,12 @@ export const updatePage = async (userData) => {
     }
     return resp();
 }
+
+export const updateFriendRequests = async (userData) => {
+    const resp = async() => {
+        const data = await axios.post("http://localhost:4000/friend_request", userData);
+       
+        return data;
+    }
+    return resp();
+}

@@ -12,17 +12,14 @@ import Typography from '@material-ui/core/Typography';
 import { red } from '@material-ui/core/colors';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import { allUserImages, likesUpload, updatePage, userDetails } from './../API/mongo';
+import { allUserImages, likesUpload, updatePage, userDetails, updateFriendRequests } from './../API/mongo';
 import Grid from '@material-ui/core/Grid';
-import SearchBar from '../Components/SearchBar';
-import TemporaryDrawer from "../Components/Drawer";
 import LoggedInUser from '../Components/LoggedInUser';
 import Cookies from 'universal-cookie';
 import { w3cwebsocket as W3CWebSocket } from "websocket";
 import Resizer from 'react-image-file-resizer';
-import Fab from "@material-ui/core/Fab";
-import AddPhotoAlternateIcon from "@material-ui/icons/AddPhotoAlternate";
 import PrimarySearchAppBar from './AppBar';
+import Button from '@material-ui/core/Button';
 
 
 // const client = new W3CWebSocket('ws://192.168.0.115:8000/');
@@ -44,6 +41,7 @@ function Home(props) {
     const [likes, setLikes] = React.useState([]);
     const [count, setCount] = React.useState(0);
     const [id, setId] = React.useState('');
+    const [searchedName, setSearchedName] = React.useState('');
 
 
     const useStyles = makeStyles((theme) => ({
@@ -93,7 +91,7 @@ function Home(props) {
                 'userId': userId,
                 'name': name,
                 'image': image,
-                'account': account
+                'account': account.account
             }
 
             axios.post("http://localhost:4000/home", data).then(res => setNewImg(res.data));
@@ -188,9 +186,20 @@ function Home(props) {
         console.log("clicked")
     }
 
+    const sendFriendRequest = async (e) => {
+        // console.log(searchedName)
+        let data = {
+            from : name,
+            to : searchedName
+        }
+
+        let updatedRequests = await updateFriendRequests(data);
+        console.log(updatedRequests)
+        
+    }
+
     
     const HomeRender = (data, flag) => {
-
         const classes = useStyles();
         if (data.length > 0) {
             let searched = 0;
@@ -202,7 +211,7 @@ function Home(props) {
                             var date = new Date(image.createdAt)
 
                             return (
-                                <div>
+                                <div key={image._id}>
                                     <Card className={classes.root}>
                                         <CardHeader
                                             onClick={
@@ -262,7 +271,11 @@ function Home(props) {
                        searched = searched + 1;
                        if(searched  == 1) {
                         return (
-                            <div>Private Account</div>
+                            <div>Private Account
+                                 <Button variant="contained" value={image.userName} color="primary" onClick={ (e) => sendFriendRequest(e)}>
+                                    Send Friend Request
+                                </Button>
+                            </div>
                         );
                        }
                        else {
@@ -272,10 +285,11 @@ function Home(props) {
                 }
                 else {
                     if (likes.length > 0) {
+                        if( name == image.userName || image.account == "public") {
                         var date = new Date(image.createdAt)
 
                         return (
-                            <div>
+                            <div key={image._id}>
                                 <Card className={classes.root}>
                                     <CardHeader
                                         onClick={
@@ -330,6 +344,7 @@ function Home(props) {
 
                         );
                     }
+                }
                 }
                 }
             });
@@ -410,7 +425,7 @@ function Home(props) {
             }
             if(userId.length > 0 ) {
             let data1 = await userDetails(Id);
-            setAccount(data1.data.userData[0].account);
+            setAccount(data1.data.userData[0]);
             }
 
             let data = await allUserImages()
@@ -454,6 +469,7 @@ function Home(props) {
 
     const sendDataToParent = (index) => {
         // setSearchText(index);
+        setSearchedName(index)
         for (var i = 0; i < photos.length; i++) {
             if (photos[i].userName == index) {
                 dupliPhotos.push(photos[i])
@@ -468,7 +484,7 @@ function Home(props) {
 
     return (
         <div>
-            <LoggedInUser.Provider value={{ loggedUser }}>
+            <LoggedInUser.Provider value={{ loggedUser, account }}>
                 <PrimarySearchAppBar sendDataToParent={sendDataToParent} sendUploadHandler={sendUploadHandler} />
             </LoggedInUser.Provider>
 

@@ -10,7 +10,8 @@ exports.userRegistration = async (req, res) => {
             name: req.body.name,
             password: req.body.pwd,
             email: req.body.email,
-            account: "public"
+            account: "public",
+            friendRequests : []            
         }
         const entry = await repo.create(userRegistrationData);
         res.status(201).json({"userId": userId})
@@ -108,6 +109,23 @@ exports.updateProfile = async (req, res) => {
             userName: req.body.name,
             account: req.body.account
         });
+        if(updatedProfile.ok == 1) { 
+            res.status(201).json({"updatedProfile": updatedProfile});
+        }
+        else {
+            res.status(401).json({"Error": "Update Failed"})
+        }
+
+    }
+    catch(err) {
+        console.log(err)
+    }
+}
+
+exports.updateFriendRequests = async (req, res) => {
+    try {
+
+        const updatedProfile = await repo.updateMany({name: req.body.to},{ $addToSet: { friendRequests: req.body.from  } } );
         if(updatedProfile.ok == 1) { 
             res.status(201).json({"updatedProfile": updatedProfile});
         }

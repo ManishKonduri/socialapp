@@ -28,4 +28,5 @@ router.post('/details', myController.userData);
 router.post('/likes', myController.imgLikes);
 router.put('/edit', myController.updateProfile);
 router.post('/update', myController.giveImgsOne);
+router.post('/friend_request', myController.updateFriendRequests);
 module.exports = router;
